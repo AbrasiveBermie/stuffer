@@ -1,0 +1,2191 @@
+ DAY 1 Network Fundamentals ****************************************************************************
+
+bit/flag = 1 bit
+nibble = 4 bits
+byte/octet = 8 bits 
+half-word = 16 bits 
+word = 32 bits 
+Very Long Word = 64 bit
+
+*** Base 64 = CFD's will ask you to convert to this, dont use cyberchef. use BASH
+
+Encapsulation & Decapsulation
+Previous layers PDU becomes the next layers SDU
+
+OSI Model - A porn star technically needs double pentration 
+- Application 
+- Presentation 
+- Session 
+- Transport 
+  - TCP
+      - Three way handshake = Syn, Syn/Ack, Ack
+  - UDP
+- Network 
+  - IPv4
+  - IPv6
+- Data Link 
+- Physical
+  - Radio Waves
+  
+Internet Standard Organizaion - Other than the OSI or TCP/IP models, it’s also important
+to understand the organizations that have been developing Internet and Networking Standards.
+- IETF - Mostly known for developing and publishing "white paper" standards known as Request for Comment (RFC).
+  - Noteable: IPv4, IPv6, TCP, UDP, HTTP 1.1
+- IANA - Controls and assigns Internet number or cyberblocks 
+  - Like giving a corporation their assigned IPv4
+- IEEE - Most notably they developed standards for Local Area Networks (802 series) 
+  - like 802.1 - LAN and WAN bridging and security, 802.2 - LLC sub-layer, 802.3 - Ethernet (CSMA/CD), etc
+
+OSI MODEL
+
+Layer 1 Physical Layer 
+
+  - Hardware Specifications
+      - cables, connectors, NICs
+  - Encoding and Signaling
+      - Transors data to bits to be sent over network
+  - Data Transmission and Reception
+  - Physical Network Design
+      - LAN & WAN topologies 
+
+Layer 2 Data links 
+
+  - MAC (Media Access Control)
+  - LLC (Logical Link Control)
+  
+  ** Headers 
+    - Ethernet Header
+      - Header set up order (14 bytes)
+          DestinationMACAddr, SourceMACAddr, EtherType, Payload/Data, CRC/FCS
+      - Ether Types (byte offset 12)
+          0800 IPv4
+          0806 ARP
+          86DD IPv6
+          8100 VLAN Tag
+          
+    -  802.1Q Header
+      - Header set up order (18 bytes)
+        - DestinationMACAddr, SourceMACAddr, VLAN Tag, EtherType, Payload/Data, CRC/FCS
+      - Ether Type (Byte Offset 16)
+      
+    - ARP Header - Correlates MAC to IP address
+        - Operation Type (Byte Offset 6)
+
+Layer 3 Network 
+
+ ** Headers
+ - By utilizing headers you can build a rough estimate on OS version/family
+    - IPv4 Header 
+      - Header Ser Up 
+        - Version, IHL, DSCP, ECN, Total Length, Id, Flags
+        - Fragment Offset, Time to Live, Protocol, Header Checksum, **SourceIPAddr, **DestinationIPAddr
+        - If IHL is greater than 5 its a red flag
+        - ECN takes up 2 Bits
+        - **Look at Table 2. IPv4 structure in Student guide
+    
+    - IPv6 Header
+      - Header set up
+        - Version, Traffic Class, Flow Label, Payload length, Next Header, Hop limit SourceIPv6, DestinationIPv6
+      - Does not fragment
+      
+    - ICMP Header 
+      - Header set up
+        - Type, Code, Checksum, ICMP specific message
+      - Type is at offset 0
+      - Code is at offset 1
+      
+  IPv4 Auto Configuration
+    APIPA
+    RFC 3927
+
+  IPv6 auto configuration
+    SLAAC (StateLess Address Auto-configuration)
+    RFC 4862
+
+
+Layer 4 Transport Layer 
+
+  TCP Headers
+    - Header set up
+      - SourcePort,DestPort,SeqNumber, AcknNumber, Offset, Reserved, TCPFlags,Window,Checksum,UrgentPointer,TCPOptions
+    - TCP Flags
+      - Urg, Acknowledge, Push, Reset, Syn, Fin
+  
+  UDP Headers 
+    - Header Set-up
+      - Source Port, Destination Port, Length, Checksum
+    
+Layer 5 Session Layer 
+
+  The main purpose of this layer is to maintain the state of your ongoing connections. 
+  This state is not used in a connection-less protocol.
+  
+  Socks
+  PPTP
+  L2TP
+  SMB/CIFS
+  RPC
+   
+Layer 6 Presentation Layer
+
+  This layer deals with the Translating, Formatting, Encryption, and Compression of data.
+  
+  Translation
+  Formatting
+  Encryption
+  Compression
+  
+Layer 7 Application Layer 
+
+  FTP Port 21
+  - Bad
+  - Shows as plain text
+  - When the session is created it doesnt shut itself off when the orignal requirement has been met
+  SSH port 22
+    - User Key - Asymmetric public key used to identify the user to the server
+    - Host Key - Asymmetric public key used to identify the server to the user
+    - Session Key - Symmetric key created by the client and server to protect the session’s communication.
+  Telnet port 23
+    - Not secure 
+  SMTP port 25
+  TACAS port 49
+  HTTP port 80
+    - Get/Head/Post/Put
+    - Status Codes
+      100, 200, 300, 400
+  HTTPS port 443
+  POP port 110
+  IMAP port 143
+  RDP Port 3389
+  DNS port 53 TCP/UDP - Maps an IP to a URL i.e. 8.8.8.8 = Google.com
+  DHCP ports 67/68
+  TFTP Port 69
+  NTP Port 123
+  SNMP ports 161/162
+  RADIUS ports 1645/1646 & 1812/1813
+  RTP Any Port above 1023
+  
+  
+  
+  
+Things to Know: 
+#Start from the right box
+#Send sends on layer 2
+#Sendp sends on layer 3
+
+
+Commands to know: 
+# Command tells you what is physically connected to the computer
+sudo arp -a
+# Sends both headers to both targets at the same time 
+sendp(a/b, iface="eth0") ; sendp(a/c, iface="eth0") #iface requires searching
+# 
+sudo tcpdump icmp host *IP* -X
+
+
+DAY 2 Network Fundamentals, Traffic Sniffing ****************************************************************
+
+Network Traffic Sniffing = Passive way to collect packets/data on a given network
+
+NIC needs to be in Permiscuous mode for wireshark to work 
+
+Wireshark 
+
+  Cheat sheet on desktop
+  
+  change view: 
+    edit -> Preferences -> Appearence -> Layout
+
+  See more columns: 
+    edit -> Preferences -> Appearence -> Columns 
+    
+  See more analysis, like who is talking more 
+    statistic -> IPv4 -> All Addresses
+    
+  See more analysis, info on protocols TCP & UDP split
+    statistic -> Protocol Hierarchy
+   
+  See more analysis, show all devices found 
+    statistic -> Endpoints
+    
+  See more analysis, show time influx of packets 
+    statistic -> I/O Graphs
+    
+  See more analysis, will show you traffic that wireshark deams as a warning or higher 
+    Analyze -> Expert Information
+    
+  See the string inside the data, TCP stream 
+    right click -> Follow -> TCP Stream 
+  
+  
+TCPDump
+
+  curl cht.sh/tcpdump #For examples 
+
+  sudo tcpdump
+
+    -D = All interfaces tcpdump can sniff on
+    -i = Means the interface you are selecting
+    -X = includes the header 
+    -w = Write to a file for further analysis
+    -r = read from a file 
+    port *port#* -XXvvn = Gives you traffic of a given port, uses boolean (i.e. port 22 or 80) or range (port 20-80)
+    port *port#* -XXvvn and host *ip* = from a given host, but gets more and more granular, like "src host"
+
+Berkeley Packet Filter (BPF) 
+
+  utilizez the tcpdump command 
+  
+  tcpdump {A} [B:C] {D} {E} {F} {G}
+
+    A = Protocol (ether | arp | ip | ip6 | icmp | tcp | udp)
+    B = Header Byte offset
+    C = optional: Byte Length. Can be 1, 2 or 4 (default 1)
+    D = optional: Bitwise mask (&)
+    E = Operator (= | == | > | < | <= | >= | != | () | << | >>)
+    F = Result of Expresion
+    G = optional: Logical Operator (&& ||) to bridge expressions
+
+  Example:
+    #Looking for IPv4 headers (=0800) but not port 22 and not port 23
+    # Ether[12:2] the 12 means starting byte, the 2 means how many bytes after
+    tcpdump 'ether[12:2] = 0x0800 && (tcp[2:2] != 22 && tcp[2:2] != 23)'
+    
+  Bitwise masking: means what bits are you looking at to be on
+    only want packets where ack & fin are on and everything else is off
+    tcpdump 'tcp[13] & 0xFF = 0x11'  -> '{1} = {2}' -> 1 is all bytes where 2 is on -> most exclusive
+    ### 'tcp[13]=0x11 ##Means the same as above
+    tcpdump 'tcp[13] & 0x11 = 0x11'  -> '{1} = {2}' -> looking at only 1 where 2 is on -> less exclusive
+    tcp[13] & 0x11 !=0 -> Looking where eithe 0x10 or 0x01 equals at least 1, essentially an or -> Least exclusive
+  **For above in Student guide, ctrl+f "Filter Logic - Most exclusive"
+    
+
+More on layer 2! 
+
+  Has to do with switches 
+  In CAM tables, the first VLAN field that doesnt say all and its type is dynamic, that means it was learned  
+  You can flood a CAM table by giving it a bunch of nonsense 
+  Mac Attack = CAM table overflow #most common layer 2 exploit 
+  You can double tag a VLAN tag, usually used by service provider
+  
+  STP 
+    This prevents broadcast loops, where the Time to Live (TTL) doesnt end, or is null meaning it exists forever
+    
+  CDP 
+    Cisco specific, becuase it be propietary 
+    passes things like hostname, and other discovery elememts 
+   
+  DTP 
+    Dynamic trunking protocol
+    This allows for multiple vlans running over a single cable
+    
+  VTP 
+    VLAN Trunking protocol 
+    
+  Port security
+    - Modes: 
+      - shutdown
+      - restrict
+      - protect
+
+More on Layer 3!
+  
+  has to do with Routers
+  Looked at JCAC mapping...... 
+  Routed protocols are network protocols  (ipv4 & ipv6)
+  Routing protocols routes a routing protocol (RIP, EIGRP)    
+  
+  IGP Interior Gateway protocols(Within your network) 
+  
+  EGP Exterior Gateway protocols (Outside of your network)
+    - BGP 
+      - Chooses best paths by utilizing the most specific routes 
+      - BGP Hijacking
+            Illegitimate advertising of addresses
+            BGP propagates false information
+            Purpose:
+              stealing prefixes
+              monitoring traffic
+              intercept (and possibly modify) Internet traffic
+              'black holing' traffic
+              perform MitM
+            Defense
+              IP prefix filtering
+              BGP hijacking detection
+                Tracking the change in TTL of incoming packets
+                Increased Round Trip Time (RTT) which increases latency
+                Monitoring misdirected traffic (change in AS path from tools like Looking Glass)
+              BGPSec
+  
+#EXAMPLES
+#Filter IPv4/6 for ttl with less than 64
+sudo tcpdump 'ip[8] <= 0x40 || ip6[7:1] <= 0x40' -r BPFCheck.pcap | wc -l
+#Fil;ter IPv4 for at least dont fragment (not super exclusive)
+sudo tcpdump 'ip[6]&0x40!=0' -r BPFCheck.pcap | wc -l
+#From a file utilizing the transport layer headers. Grab source ports greater than 1024
+sudo tcpdump 'tcp[0:2]>1024||udp[0:2]>1024' -r BPFCheck.pcap | wc -l
+# see if an IP or IPv6 is UDP
+sudo tcpdump 'ip[9]=17||ip6[6]=17' -r BPFCheck.pcap | wc -l
+# Return only if ack/fin and ack/rst are set
+sudo tcpdump 'tcp[13]=0x11||tcp[13]=0x14' -r BPFCheck.pcap | wc -l
+#return packet count of all headers with ip ID of 213
+sudo tcpdump 'ip[4:2]=213' -r BPFCheck.pcap | wc -l
+# Return if there is a VLAN tag 
+sudo tcpdump 'ether[12:2]=0x8100' -r BPFCheck.pcap | wc -l
+#Hit on if anything is related to dns
+sudo tcpdump 'tcp[0:2]=53||tcp[2:2]=53||udp[0:2]=53||udp[2:2]=53' -r BPFCheck.pcap | wc -l
+# only hit if the DCPS code is 24
+sudo tcpdump 'ip[1]&0xfC=0x60' -r BPFCheck.pcap | wc -l
+# Looking at windows or powershell identify the start of a traceroute which is a ttl of 1
+sudo tcpdump 'ip[8]=1&&(ip[9]=17||ip[9]=1)' -r BPFCheck.pcap | wc -l
+
+
+Day 3 Packet Creation and Socket Programming******************************************************
+
+Socket = IP & Port. Endpoints between two connections, interprocess comunication 
+
+Socket types: 
+
+      Stream Sockets - *TCP* Connection oriented and sequenced; methods for connection establishment and tear-down. 
+        Used with TCP, SCTP, and Bluetooth.
+        - Requires that three way handshake 
+        
+      Datagram Sockets - *UDP* Connectionless; designed for quickly sending and receiving data. Used with UDP.
+      
+      Raw Sockets - Direct sending and receiving of IP packets without automatic protocol-specific formatting.
+        - Used all the time
+        - When you sniff traffic it retains the header oackets your searching for 
+        - 
+
+User Space Sockets - Since in user, you dont need sudo 
+  - Stream Sockets
+  - Datagram Sockets
+  - Using tcpdump or wireshark to read a file
+  - Using nmap with no switches
+  - Using netcat to connect to a listener
+  - Using netcat to create a listener above the well known port range(1024+)
+  - Using /dev/tcp or /dev/udp to transmit data
+  
+Kernel Space Sockets - requires sudo as it works from the system 
+  - Raw Sockets
+  - Using tcpdump or wireshark to capture packets on the wire
+  - Using nmap for OS identification or to set specific flags when scanning
+  - Using netcat to create a listener in the well known port range (0 - 1023)
+  - Using Scapy to craft or modify a packet for transmission
+  - Using Python to craft or modify Raw Sockets for transmission
+  - Network devices using routing protocols such as OSPF
+
+Understanding Python Terminology
+
+    Libraries
+        Modules
+            Functions
+            Exceptions
+            Constants
+            Objects
+            Types
+
+ Network Programming with Python3
+
+    Network sockets primarily use the Python3 Socket library and socket.socket function.
+
+  import socket
+    s = socket.socket(socket.FAMILY, socket.TYPE, socket.PROTOCOL)
+
+  Inside the socket.socket. function, you have these arguments, in order:
+    socket.socket([*family*[,*type*[*proto*]]])
+  family constants should be: AF_INET (default), AF_INET6, AF_UNIX
+  type constants should be: SOCK_STREAM (default), SOCK_DGRAM, SOCK_RAW
+  proto constants should be: 0 (default), IPPROTO_RAW
+
+Socket Link: https://docs.python.org/3/library/socket.html
+struct Link: https://docs.python.org/3/library/struct.html
+Sys link: https://docs.python.org/3/library/sys.html
+_____________________________________________________
+** Create a stream (TCP) socket connection and send a message
+
+vim streamSENDER.py #:set nu - line numbers
+
+
+#!/usr/bin/python3
+import socket
+# This can also be accomplished by using s = socket.socket() due to AF_INET and SOCK_STREAM being defaults 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ipaddr = '127.0.0.1'
+port = 54321
+s.connect((ipaddr,port))
+#To send a string as a byte like opject add the prefix b to the string. \n = newline
+s.send(b'Hello\n')
+#It is resommended that the buffersize ised with recvfrom is a power of 2
+response, conn = s.recvfrom(1024)
+#In order to receive a messahe that is sent as byte-like-object you must decode it from UFT-8
+print(response.decode())
+s.close #Close the socket
+
+#In terminal
+chmod +x streamsender.py
+python3 streamSENDER.py
+
+
+** Create a listener ON A SEPERATE TERMINAL
+echo "Yo dawg i got your message" | nc -l -p 54321
+_______________________________________________________
+** Create a DataGram (UDP) socket connection and send a message
+
+vim datagramSENDER.py
+
+#!/usr/bin/python3
+import socket
+
+# This can also be accomplished by using s = socket.socket() due to AF_INET and SOCK_DGRAM being defaults 
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+ipaddr = '127.0.0.1'
+port = 54321
+
+#To send a string as a byte like opject add the prefix b to the string. Since its udp, port and ipaddr are here
+s.sendto(b'Hello\n',(ipaddr,port))
+
+#It is resommended that the buffersize ised with recvfrom is a power of 2
+response, conn = s.recvfrom(1024)
+
+#In order to receive a messahe that is sent as byte-like-object you must decode it from UFT-8
+print(response.decode())
+
+#In terminal 
+chmod +x datagramSENDER.py
+python3 datagramSENDER.py
+
+**Create a listener ON A SEPERATE TERMINAL  
+echo "Yo dawg i got your message" | nc -l -p 54321 -u
+____________________________________________________________________
+
+Raw Sockets
+  - Raw sockets scripts must include the IP header and next headers 
+  - Testing specific defense mechanisms - such as triggering and IDS for an effect, or filtering
+  - Avoiding defense mechanisms
+  - Obfuscating data during transfer
+  - Manually crafting a packet with the chosen data in header fields
+  
+____________________________________________________________________
+
+** Create a RAW socket connection and send a message
+
+vim rawIP.py && chmod +x rawIP.py
+
+#!/usr/bin/python3
+#For building the socket  and sys level commands 
+import socket, sys
+# For establishing the packet structure(use later), this will allow direct access to the direct methods and functions to the struct module 
+from struct import *
+# Create raw socket 
+try: 
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+except socket.error as msg: 
+    print(msg)
+    sys.exit()
+packet = "" 
+src_ip = "10.1.0.2"
+dst_ip = "10.3.0.2"
+#IPv4 header information
+ip_ver_ihl = 69
+ip_tos = 0  #THis combines the DSCP and the ECN
+ip_len = 0  #The kernel will fill in the actual length
+ip_id = 12345 #Sets ip id of the packet
+ip_frag = 0 # Sets fragmentation to off
+ip_ttl = 64 # This determines the ttl of the packet when leaving the machine 
+ip_proto = 16 #Sets the IP protocol to 16 (Chaos). if this was 6 (TCP), or 17 (UDP). If 6 or 17, additional heaerds required
+ip_check = 0 #Kernel will fil in the checksum
+ip_srcadd = socket.inet_aton(src_ip) #inet_atom(string) will convert the ip address to a 32 bit binary
+ip_dstadd = socket.inet_aton(dst_ip) #Same as above
+ip_header = pack('!BBHHHBBH4s4s' , ip_ver_ihl, ip_tos, ip_len, ip_id, ip_frag, ip_ttl, ip_proto, ip_check, ip_srcadd, ip_dstadd)
+# B = 1 byte    (Byte) 
+# H = 2 bytes   (Half Word)
+# 4s = 4 bytes  (Word)
+message = b'This is a message'
+packet = ip_header + message
+#SEND IT
+s.sendto(packet, (dst_ip, 0))
+
+##In terminal
+sudo ./rawIP # To run it 
+
+##In seperate terminal you need to pull wireshark and filter on the dest ip of above
+______________________________________________________________________________________
+
+Encoding
+   The process of taking bits and converting them using a specified cipher.
+
+Decoding
+   Reverse of the conversion process used by the specified cipher for encoding.
+   Common encoding schemes
+   UTF-8, Base64, Hex
+
+___________________________________________________________________________________-
+
+** Create a RAW TCP socket connection and send a message
+
+vim rawTCP.py
+
+#!/usr/bin/python3
+
+#For building the socket  and sys level commands and arrays
+import socket, sys, array 
+
+# For establishing the packet structure(use later), this will allow direct access to the direct methods and functions to the struct module 
+from struct import *
+
+# Create raw socket 
+try: 
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+
+except socket.error as msg: 
+    print(msg)
+    sys.exit()
+
+packet = "" 
+src_ip = "10.1.0.2"
+dst_ip = "10.3.0.2"
+
+#IPv4 header information
+ip_ver_ihl = 69
+ip_tos = 0  #THis combines the DSCP and the ECN
+ip_len = 0  #The kernel will fill in the actual length
+ip_id = 12345 #Sets ip id of the packet
+ip_frag = 0 # Sets fragmentation to off
+ip_ttl = 64 # This determines the ttl of the packet when leaving the machine 
+ip_proto = 6 # Sets the ip protocol to 6 (tcp) so additional headers are required
+ip_check = 0 #Kernel will fil in the checksum
+ip_srcadd = socket.inet_aton(src_ip) #inet_atom(string) will convert the ip address to a 32 bit binary
+ip_dstadd = socket.inet_aton(dst_ip) #Same as above
+
+ip_header = pack('!BBHHHBBH4s4s' , ip_ver_ihl, ip_tos, ip_len, ip_id, ip_frag, ip_ttl, ip_proto, ip_check, ip_srcadd, ip_dstadd)
+# B = 1 byte    (Byte) 
+# H = 2 bytes   (Half Word)
+# 4s = 4 bytes  (Word)
+
+#Define the fields of a TCP header 
+tcp_src = 54321 # Source port
+tcp_dst = 7777 # destination port 
+tcp_seq = 454 # sequence start number
+tcp_ack_seq = 0 # tcp sequence ack number
+tcp_data_off = 5 #Data offset specifying the size of the tcp header times 4
+tcp_reserve = 0 # the 3 reserve bits + ns flag in reserve field
+tcp_flags = 0 #TCP flag field before the bits are turned on
+tcp_win = 65535 
+tcp_chk = 0
+tcp_urg_ptr = 0
+
+# Combine the left shifted 4 bit tcp offset and the reserve fields 
+tcp_off_res = (tcp_data_off << 4) + tcp_reserve
+
+# TCP flags by bit starting from right to left 
+tcp_fin = 0 #0 off, 1 on
+tcp_syn = 1
+tcp_rst = 0
+tcp_psh = 0
+tcp_ack = 0
+tcp_urg = 0
+tcp_ece = 0
+tcp_cwv = 0
+
+#Combine the tcp flags by left shifting the hit locations and adding hits together 
+tcp_flags = tcp_fin + (tcp_syn << 1) + (tcp_rst << 2) + (tcp_psh << 3) + (tcp_ack << 4) + (tcp_urg << 5) + (tcp_ece << 6) + (tcp_cwv << 7) 
+
+# The ! in the pack format string means netword order
+tcp_hdr = pack('!HHLLBBHHH', tcp_src, tcp_dst, tcp_seq, tcp_ack_seq, tcp_off_res, tcp_flags, tcp_win, tcp_chk, tcp_urg_ptr) 
+# B = 1 Byte (Byte) 
+# H = 2 bytes (Half-Word)  
+# L = 4 bytes (word) 
+
+message = b'Hello, is this hidden?'
+
+# Psuedo header fields 
+src_address = socket.inet_aton(src_ip)
+dst_address = socket.inet_aton(dst_ip)
+reserved = 0
+protocol = socket.IPPROTO_TCP
+tcp_length = len(tcp_hdr) + len(message) 
+
+# Pack the psuedo header and combine the user data (message) 
+ps_hdr = pack('!4s4sBBH', src_address, dst_address, reserved, protocol, tcp_length)
+ps_hdr = ps_hdr + tcp_hdr + message
+
+def checksum(data): 
+    if len(data) % 2 != 0: 
+            data += b'\0'
+    res = sum(array.array('h',data))
+    res = (res >> 16) + (res & 0xffff) 
+    res += res >> 16
+    return(~res) & 0xffff
+
+tcp_chk = checksum(ps_hdr)
+# Pack the tcp header to fill in the correctr checksum 
+tcp_hdr = pack('!HHLLBBH', tcp_src, tcp_dst, tcp_seq, tcp_ack_seq, tcp_off_res, tcp_flags, tcp_win) + pack('H', tcp_chk) + pack('H', tcp_urg_ptr)
+
+#COmbine EVERYTHING
+packet = ip_header + tcp_hdr +  message
+
+#SEND IT
+s.sendto(packet, (dst_ip, 0))
+
+#Terminal
+sudo ./rawTCP.py 
+
+#Catch it in wireshark
+____________________________________________________________________________________
+
+** all examples are in socket.d on internet host
+
+##EXAMPLE 
+#what socket families deal with address
+socket.UNIX/INET/INET6
+#Open and close for a socket
+socket.connect(), socket.close()
+#what module and function packet your data for network
+struct.pack
+# Raw packets require you to make headers 
+# how d oyou send to a remote(UDP)
+socket.sendto()
+# Sockets need ipaddr & port
+# When sending data, data is sent as bytes
+# Change the ascii code to hex
+import binascii
+binascii.hexlify(b'Bermudez')
+# All other examples are in the internet host socket file
+
+
+
+
+Day3 Network Analysis ********************************************************************************************
+
+4 types of recon: 
+
+  - Actvie 
+  - Passive 
+  - Internal 
+  - External 
+  
+Passive Recon: 
+  - Low risk of discovery 
+  - Gathers info without targets direct interaction 
+  - Involves identifying Ip addrs & subdomains, External & 3rd party sites, people and tech, content of interest, vulnerabilities 
+  - ex: 
+    - WHOIS queries - from macines 
+    - Job site listing 
+    - Phone Numbers 
+    - Google Searches 
+    - OS fingerprinting 
+    - whois - give you the basic information on an ip or website 
+    - viewdns - Gives you all network information on a given dns 
+    - RFC 39120
+    - DIG - Tool to look up dns information (i.e. dig google.com mx) for more info curl cht.sh/dig
+      - Types of records: 
+        - quad A - IPv6 
+        - A - IPv4
+        - TXT - wildcar record 
+        - SOA
+        - C - Alias 
+        - MX - Mail 
+        - any - returns all
+    - DNS Zone Transfer - shares information between DNS servers, free transfers 
+      - dig axfr *Site* zonetrasferme.me
+    - Host History 
+      - Netcraft 
+      - Waybackmachine - pulls back old iterations of websites 
+    - Shodan - pay them money to query other device information 
+
+
+Active Recon 
+  - scanning strategies:  (Local being the target) 
+    - Remote to Local 
+    - Local to remote 
+    - Local to Local
+    - Remote to Remote
+  - Scanning approacj 
+    - Aim 
+      -Wide range scan target scan (192.0.0.0/24)
+      - Target specific scan 
+    - Method 
+      - Singular source scan (one computer scanning) 
+      - Distributed scan 
+    - Generic scans 
+      - Broadcast Ping or Ping Sweep 
+      - ARP scan - only usefil if you are on that network 
+      - Syn scan - 
+      - Full connect scan 
+      - Null scan 
+      - Fin scan 
+      - XMAS tree scan - sends all flags FIN, RST, ACK
+      - UDP scan 
+      - idle Scan - send packets from a zombie host (considered a stealthy scan) 
+      - ACK/window scan - ACK scan but uses window field to determine if port is open 
+      - RPC Scan - remote procedure call scan 
+      - FTP scan or Bounce - send to a server and try to reach a port, says if port is open 
+      - Decoy scan - Scan with multiple sources, pretend to be 100 different ips, but onlye care about 1
+      - Version scan - tries to see what port is running 
+      - Ping scan 
+      - Discovery Probes 
+      - SCTP INIT scan - TCP & UDP at the same time, uses SCTP protocol
+ 
+      
+Scannin tools using in this class 
+  - nmap - Network exploitation tool and security
+    - https://stationx-public-download.s3.us-west-2.amazonaws.com/nmap_cheet_sheet_v7.pdf
+    - https://usermanual.wiki/Pdf/nmapquickreferenceguide.1045482188/view
+    - nmap -p- is a hail mary, scans everything 
+    - 
+    
+  - nc -swiss army knife 
+    - Basic network tool, primarily used for TCP based scans.  
+    - - l - opens a listening port on your box
+    - culr cht.sh/nc
+
+**CREATE THE FOLLOWING ON A GIVEN MACHINE _______________________________________________________
+vim scan.sh
+
+#!/bin/bash
+echo "Enter network address (e.g. 192.168.0): "
+read net
+echo "Enter starting host range (e.g. 1): "
+read start
+echo "Enter ending host range (e.g. 254): "
+read end
+echo "Enter ports space-delimited (e.g. 21-23 80): "
+read ports
+for ((i=$start; $i<=$end; i++))
+do
+    nc -nvzw1 $net.$i $ports 2>&1 | grep -E 'succ|open'
+done
+# (-v) running verbosely (-v on Linux, -vv on Windows),
+# (-n) not resolving names. numeric only IP(no D.S)
+# (-z) without sending any data. zero-I/O mode(used for scanning)
+#(-w1) waiting no more than 1second for a connection to occur
+# (2>&1) redirect STDERR to STDOUT. Results of scan are errors and need to redirect to output to grep
+# (-E) Interpret PATTERN as an extended regular expression
+# ( | grep open) for Debian to display only open connections
+# ( | grep succeeded) for Ubuntu to display only the open connections
+
+chmod +x scan.sh
+./scan.sh
+127.0.0       #This is to see the local host 
+the inputs: 1,1, for this class 21-23 80
+_________________________________________________________________________________________________
+    
+##Things to know 
+# In VYOS all you need to know is "show configuration" command
+# To get the host of a cidr 
+https://duckduckgo.com/
+# OR
+on desktop, vlsm.pdf
+# Trust but always validate you network maps 
+# Site to map your routes 
+https://app.diagrams.net/
+# If you see 0.0.0.0 on a netstat, it means that it is a wildcard. Any ip can access it remotely
+
+## Example Codes:
+#Individual pings to a given network 
+for i in {1..254}; do ping -c 1 -W 1 10.1.1.$i | grep 'from'; done
+# Code that gives you ip information on your box
+ip addr
+# Banner grab of a given port , also says if a specific prot is open 
+nc localhost *port #*
+# create a directory from a webserver based off a website and store it with the given name 
+wget -r localhost 
+# create a directory from a webserver based off a protocol and sotre it in the given name
+wget -r ftp://localhost
+# create a directory from a webserver based off a PORT and sotre it in the given name
+wget -r localhost:1234
+# grab port information 
+netstat
+# more granular than above, shows all listening ports 
+netstat -ntlp
+# To see all ports in any state 
+neststat -antp
+# more help on netstat
+curl cht.sh/netstat
+# See ARP Cache , devices that are directly connected to you
+sudo arp -a
+
+
+##Practice 
+# to find the additional hosts on a given network you need 2 below.
+show configuration  #in the cisco router do #ALSO show int
+for i in {1..254}; do ping -c 1 -W 1 172.16.101.$i | grep 'from'; done  # Do a ping sweep, and subtract from above
+# See what ports are open on a device 
+nmap *IP* 
+# The default for this class is always 
+student password 
+# Enumerating a box 
+ip a 
+ip addr
+netstat -ntlp   # Listening ports 
+# To view open ports on a given ip above well knows 
+netcat -v -z -n -w 1 172.16.182.110 1024-10000
+dont need the additional flags, read up on them to better understand 
+# To scan for specific UDP ports that are open 
+sudo nmap -sU -v 172.16.182.110 -p 1980-1989
+# To get information on a udp port 
+netcat -u *ip* *port*
+# To scan for specific TCP ports that are open 
+sudo nmap -sT -v 172.16.182.110 -p 1980-1989
+# To get information on a tcp port 
+netcat -t *ip* *port*
+# view open well known ports on an IP
+netcat -v -z -n -w 1 172.16.182.110 1-1023
+# working with server 
+wget -r 172.16.140.33 80
+cd to the folder
+eom the image
+
+
+THE BIG OF THE BIG FOR THIS NEXTWORK ENUMERATION: 
+1. if on a router 
+show int
+show conf 
+2. If scanning a router from outside of well known ports
+netcat -v -z -n -w 1 *IP* 1-1023
+nmap *IP*
+2.a. View all open ports above well known 
+netcat -v -z -n -w 1 172.16.182.110 1024-10000
+
+3. If looking for open tcp ports on a computer
+sudo nmap -sT -v 172.16.182.110 -p 1980-1989
+3.a view the information on that tcp port
+netcat -t *ip* *port*
+
+4. If looking for open udp ports on a computer
+sudo nmap -sU -v *IP* -p *Port range*
+4.a view the information on that udp port
+netcat -u *ip* *port*
+
+5. get connection and additonal info on computer 
+ip a or ip addr # says who the box is connected to 
+
+6. Use the script above for specific ports on the machine 
+
+7. working on a web servers information
+wget -r 172.16.140.33 80
+cd to the folder
+eom the image
+
+DAY 4 Data transfer, moverment, and redirection ***************************************************************************
+
+Common methods for transferring data 
+  - TFTP
+    - RFC 1350
+    - UDP 
+    - Small and simple 
+    - no connection 
+    - insecure 
+    - no direct services 
+    - used often for BOOTP and PXE
+    
+  - FTP 
+    - Two modes: 
+      - Active 
+      - Passive
+    - RFC 959
+    - TCP 
+    - Requires multiple connections 
+    - 21 control connection / 22 Data connection
+    - Insecure in default config
+    - has directory services
+    - can be enhanced in SSL/TLS
+    
+  - SFTP
+    - TCP transport (TCP port 22)
+    - Uses symmetric and asymmetric encryption
+    - Adds FTP like services to SSH
+    - Authentication through sign in (username and password) or with SSH key
+    - Interactive terminal access
+    
+  - FTPS 
+    - TCP 443 
+    - Adds SSL/TLS encryption to FTP 
+    - requires pki or authentication 
+    - interactive termianl 
+
+# to get into ftp mode
+ftp localhost 
+wget ftp://localhost
+
+  - SCP
+    - tcp port 22
+    - uuses symmetric and assymetric
+    - uses authentication 
+    - non-interactive
+    - If you cannot SSH, you cannot ssh
+ 
+ # To secure (copy) download from another box box 
+ scp student@172.16.82.106:secretstuff.txt /home/student
+ #To secure (copy) upload to another box
+ scp secretstuff.txt student@172.16.82.106:/home/student
+ # copy from another remote and put it on another remote 
+ scp -3 student@172.16.82.106:/home/student/secretstuff.txt student@172.16.82.112:/home/student
+ # download a file from remote to local changing ports 
+ scp -P 1111 student@172.16.82.106:secretstuff.txt /home/student
+ # Upload a file to a remote 
+ scp -P 1111 secretstuff.txt student@172.16.82.106:/home/student
+ ##Create a tunnel and send through it
+ ssh student@172.16.82.106 -L 1111:localhost:22 -NT
+ scp -P 1111 student@localhost:secretstuff.txt /home/student  #Download a file from remote to local
+ #OR 
+ scp -P 1111 secretstuff.txt student@localhost:/home/student # Upload from local to remote
+ 
+ Netcat - *Listener always has to be up before the connection can start
+  - Client to listener file transfer
+    Client (sends file): nc 10.2.0.2 9001 < file.txt
+    Listener (receive file): nc -l -p 9001 > newfile.txt
+  - Listener to client 
+    Listener (sends file): nc -l -p 9001 < file.txt
+    Client (receive file): nc 10.2.0.2 9001 > newfile.txt
+    
+   **If you pipe a command into the listener to respond when you connect to it, you will not be able to respond as the listener
+   
+#Create a pipe to send traffic one way as a relay (Client box) , doesnt log and requires TCP
+mknod mypipe p    #mkfifo PIPE
+nc 10.1.0.2 9002 < mypipe | nc 10.2.0.2 9001 > mypipe
+# ON listener2 (sends info) 
+nc -l -p 9002 < infile.txt
+# ON listener1 (recieves info) 
+nc -l -p 9001 > outfile.txt
+##Writes the output to listener1 and listener2 through the named pipe
+***OR
+#Create a pipe to send traffic one way as a relay (Client box) , doesnt log and requires TCP
+mkfifo PIPE    
+nc 10.1.0.2 9002 < PIPE | nc 10.2.0.2 9001 > mypipe
+# ON listener2 (sends info) 
+cat file.txt > /dev/tcp/10.2.0.2/9001
+# ON listener1 (recieves info) 
+nc -l -p 1111 > file.txt
+##Writes the output to listener1 and listener2 through the named pipe
+ 
+ #Create a pipe to send a file one way as a relay (Client box) , doesnt log and requires TCP
+mkfifo PIPE  
+nc 192.168.1.10 1133 > PIPE | nc -lp 1234 < PIPE
+# ON listener2 (sends info) 
+nc -lp 1133 < filer.txt
+# ON listener1 (recieves info) 
+nc 172.16.82.106 1234 > filer.txt
+##Writes the output to listener1 and listener2 through the named pipe
+
+#EXAMPLES 
+#1
+mkinfo #ON relay
+nc -lp 1234 > PIPE | nc 10.10.0.40 1234 < PIPE  #ON relay, they are sending the connection to the relay
+nc -lp 1234 > 1steg.jpg #ON receiver
+#2
+mkinfo #ON relay
+nc -lp 4321 > PIPE | nc 10.10.0.40 1234 < PIPE  #ON relay, they are sending the connection to the relay
+nc -lp 1234 > 2steg.jpg #ON receiver
+#3
+mkinfo #ON relay
+nc 172.16.82.115 6789 > PIPE | nc 10.10.0.40 1234 < PIPE #ON relay, We are sending the connection from the relay
+nc -lp 1234 > 1steg.jpg #ON receiver
+#4
+mkinfo #ON relay
+nc 172.16.82.115 9876 > PIPE | nc 10.10.0.40 1234 < PIPE #ON relay, We are sending the connection from the relay
+nc -lp 1234 > 1steg.jpg #ON receiver
+
+Scheme of Maneuver:
+Task 1
+> INTERNET_HOST (T1)
+→ BLUE_HOST-4 (T2) 172.16.82.115
+→ BLUE_INT_DMZ_HOST-1 (RELAY) 172.16.40.10
+
+** Tunnelling 
+  - SSH
+    - Various Implementations (v1 and v2)
+    - Provides authentication, encryption, and integrity.
+    - Allows remote terminal sessions
+    - Used for tunneling
+    - Created as a secure replacement for Berkeley Remote commands:
+      - rsh - replaced with ssh, provides a channel for running a shell on a remote computer.
+      - rlogin - replaced with rlogin, provides remote login capability.
+      - rcp - replaced with scp for secure file transfer
+    - sftp (not a unix r command replacement) - creates remote directory listing and file transfer capability over SSH
+    - Works by keys
+      - to establish, it utilizes an assymetric encryption
+      - After it is established, it moves to symmetric since it is faster
+
+  - SSH Port Forwarding
+    - Creates channels using SSH-CONN protocol
+    - Allows for tunneling of other services through SSH
+    - Provides insecure services encryption
+  
+  - SSH Local Port Forwarding
+    - Syntax
+      ssh -p <optional alt port> <user>@<pivot ip> -L <local bind port>:<tgt ip>:<tgt port> -NT
+      or
+      ssh -L <local bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<pivot ip> -NT
+      
+*****LOCAL*****
+   * IF SSH DOESNT WORK, port binding wont work 
+    #Example, Creates a local port (1111) on the local host that forwards to a target machine’s port 80.
+      ssh student@172.16.82.106 -L 1111:localhost:80 -NT
+      #OR
+      ssh -L 1111:localhost:80 student@172.16.82.106 -NT
+    #Above works to get through a firewall, 
+    -NT makes it non interactive, just a holding tunnel
+    #MORE Examples
+    1. going from your box to another
+    __By default use 22__ ___MyPt_ConnHost_TheirPort
+    $ ssh john@10.0.0.102 -L 1111:localhost:80 -v -NT
+    |___________________||____________________||_____|
+              |                       |            |
+    ssh authentication       local port forward   options
+    
+    2. If you were going to a second box and using a middle man
+    __By default use 22__ ___MyPt_2ndHopBox__The2ndPort
+    $ ssh john@10.0.0.102 -L 1111:*00.00.00.00*:22 -v -NT
+    |___________________||____________________||_____|
+              |                       |            |
+    ssh authentication       local port forward   options
+
+#The example below is a user created 2 tunnels and then connectins to the third box utilizing firefox 
+#Internet Host:
+ssh student@172.16.1.15 -L 1111:172.16.40.10:22 -NT
+ssh student@localhost -p 1111 -L 2222:172.16.82.106:80 -NT 
+firefox localhost:2222 #THe firefox is opening on your box while POINTing at 172.16.82.106
+
+SSH DYNAMIC Port Forwarding 
+  - Utlizing proxy chains, deafult is 9050, cant change this 
+  - Syntax
+      ssh -D <port> -p <alt port> <user>@<pivot ip> -NT
+  - Can send ONLY network TCP protocol through it 
+  - MAKE SURE SSH WORKS FIRST 
+  - Can only have one at a time since it occupies the port
+  
+  #EXAMPLE OF PROXYCHAINING
+  1.
+  #Blue Private Host-1:
+  ssh student@172.16.82.106 -D 9050 -NT #Creates the dynamic 
+  #How to use it below
+  proxychains ./scan.sh         #THEY KEEP SAYING USE THE SCRIPT THEY GAVE
+  proxychains ssh student@10.10.0.40
+  #This allows you to use your local commands on the network 
+  
+  2. After finding an additional box from above you must drop the the connection, tunnel and recreat the proxy
+  #Chain as such below 
+  #Blue Private Host-1:
+  ssh student@172.16.82.106 -L 1111:10.10.0.40:22 -NT
+  ssh student@localhost -D 9050 -p 1111 -NT
+  #after being in, can run things like 
+  proxychains curl ftp://www.onlineftp.ch
+  proxychains wget -r www.espn.com
+  proxychains ./scan.sh
+  proxychains ssh student@172.16.101.2
+    
+Things to know: 
+Name your damn terminals
+
+####Set up your first tunnel :)
+#for this, we wanted to reach BLUE_PRIV_HOST-1, to get there we had to go through BLUE-HOST-1 since it is the only
+# --machine that has the capability to get to the box
+#int terminal 1, test the box to see if ssh works 
+ssh 172.16.82.106
+# close the original session then  
+ssh 172.16.82.106 -L 1234:192.168.1.10:22 -NT
+# Name the terminal tunnel!
+**># in terminal 2, in a seperate terminal named after the destination
+ssh -p 1234 localhost
+#You're in!
+
+ssh cctc@10.50.1.150 -L 1111:localhost:22 -NT 
+ssh cctc@localhost -p 1111 -L 2222:100.1.1.2:22 -NT 
+ssh -R 4444:localhost:22 cctc@192.168.2.1 -NT 
+
+ssh -p 2222 localhost -L 3333:172.16.82.106:23
+telnet localhost 3333 
+
+
+## Add proxy chain! start from **>
+#In terminal 2, you will be creating the proxy chain with this below 
+ssh -p 1234 localhost -D 9050
+# Name your terminal proxychain conn!! 
+# In your third terminal to run commands, you need proxy chains
+proxychains nmap 192.168.1.10/24 -p 22 -Pn #pings all things the box can talk to on the ip
+proxychains ./scan.sh #Shits faster than above
+
+*****REMOTE*****  
+    
+    SSH
+      - Only use this when you cannot SSH to a box 
+      - syntax
+          ssh -p <optional alt port> <user>@<remote ip> -R <remote bind port>:<tgt ip>:<tgt port> -NT
+          or
+          ssh -R <remote bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<remote ip> -NT
+      - Example
+          # Blue Host-1
+          ssh student@10.10.0.40 -R 1111:localhost:80 -NT # Local host is now machine youre logged into
+      - additional Example, getting to a one hop device through a firewall
+          #Blue Private Host-1: #Terminal 1
+          ssh student@172.16.82.106 -R 1111:localhost:22 -NT
+
+          #Internet Host:3 #Terminal 2
+          ssh student@172.16.82.106 -L 2222:localhost:1111 -NT
+
+          #Internet Host: #Terminal 3
+          #ssh localhost -p 2222
+          
+First remote tunnel:(
+#from blue priv host
+#test if ssh is open 
+ssh 192.168.1.1
+# if works make a remote tunnel #Terminal 1
+ssh 192.168.1.1 -R 32700:localhost:22 -NT #localhost is the box youre running from since you remoted to it. 
+# You then need to connect to to blue host 1, to establish that full connection #Terminal 2
+ssh 172.16.82.106 -L 1111:localhost:32700 -NT
+**> # access the blue priv host through the double tunnels 
+ssh -p 1111 localhost 
+
+## Add proxy chain! start from **>
+#In terminal 3, you will be creating the proxy chain with this below 
+ssh -p 1234 localhost -D 9050
+# Name your terminal proxychain conn!! 
+# In your third terminal to run commands, you need proxy chains
+proxychains nmap 192.168.1.10/24 -p 22 -Pn #pings all things the box can talk to on the ip
+proxychains ./scan.sh #Shits faster than above
+
+***Setting up telnet: 
+ssh cctc@10.50.1.150 -L 1111:localhost:22 -NT #terminal 1
+ssh cctc@localhost -p 1111 -L 2222:100.1.1.2:22 -NT #Terminal 2
+ssh -p 2222 localhost -L 3333:172.16.82.106:23 #terminal 3 create the local port bind
+telnet localhost 3333 #connect via telnet terminal 4
+
+
+Day 5 - Gunny Gerwing Day ***************************************************
+
+
+
+*****************************************************************************
+
+##Practice
+1# Create a local tunnel through t3 as it can reach the 10.3.0.10/24 network, and open the http port on the http server
+ssh net3_student6@10.50.29.96 -L 30700:10.3.0.27:80
+wget -r http://localhost:30700
+cd localhost:30700
+cat index.html
+
+#Create a Dynamic Port Forward from Internet_Host to T3 then use proxychains to pull the flag.
+ssh net3_student6@10.50.29.96 -D 9050 -NT # Terminal 1
+proxychains wget ftp://10.3.0.1 #terminal 2
+cat index.html.1 #Found that there is two files within the server with links 
+proxychains wget ftp://10.3.0.1:21/flag.txt #Downloaded the file describes above
+
+##You are on t4 Conduct passive recon on this host and determine where the shared location 
+# for data relating to CCTC is on the machine.
+find / -name hint* 2> /dev/null
+find / -name flag* 2> /dev/null
+
+##Create a Remote Port Forward from T4 to T3 binding the source as one of 
+##Your authorized ports, from the Mission Prompt, targeting:
+ss -ntlp  #check to see what ports are open with no commands to use
+#Watch out for floating IPs vs network ips
+ssh 10.3.0.10 -R 30702:localhost:22 -NT #From comprimised box to a box internet_host can reach
+ssh net3_student6@10.50.29.96 -L 30703:localhost:30702 -NT #From internet_host terminal 1, establishes the tunnel
+*ssh -p 30703 net3_student6@localhost #From internet_host terminal 2, now i can do ish
+## Skip *, Create a Local Port Forward from Internet_Host to T3 targeting the port you just established.
+ssh net3_student6@localhost -p 30703 -L 30704:10.2.0.2:80 -NT #Internet_host terminal 3
+wget -r http://localhost:30704 #terminal 4
+cd localhost:30704
+cat index.html
+
+##Build a Dynamic tunnel to T4 and conduct active recon to find the ``Mohammed" host.
+ssh net3_student6@localhost -p 30703 -D 9050 -NT #use most of above, replace terminal 3 above with
+proxychains wget -r ftp://10.2.0.2:21 #terminal 4
+cd 10.2.0.2
+cat flags.txt
+
+##Build a Dynamic tunnel to T3 and conduct active recon to find the Cortina host.
+ssh net3_student6@10.50.29.96 -D 9050 -NT #Terminal 1
+proxychains wget -r http://10.3.0.1   #Terminal 2
+cd 10.3.0.1
+cat index.html
+
+##Things to know from number fucking 8 and 9 builds it using the proxychains of
+ls /usr/share/cctc	#This is where hints and clues could be, goddamn
+# built another tunnel
+proxychains wget -r ftp://10.5.0.1
+proxychains wget -r http://10.5.0.1
+
+##10 amd 11 note building,
+******** you can run as many proxychains as you want, the -D9050 can only have 1
+bulds off of question ##Create a Dynamic Port*
+
+
+#
+ssh net3_student6@10.50.29.96 -D 9050 -NT #Terminal 1
+proxychains wget -r ftp://10.3.0.27   #Terminal 2
+cd 10.3.0.1
+cat index.html
+
+Task3 
+T3
+Hostname: Atropia
+IP: 10.50.29.96 (Will be Provided by Mission Command)
+creds: netY_studentX:passwordX (netY = Networking Class Identifier & studentX = Student Number & passwordX = Student Number)
+Known Ports: 22(ssh)
+Action: Establish appropriate tunneling techniques
+
+T4
+Hostname: Pineland
+IP: 10.50.21.23 (Will be Provided by Mission Command)
+creds: netY_studentX:passwordX (netY = Networking Class Identifier & studentX = Student Number & passwordX = Student Number)
+Known Ports: 23(telnet - go directly from T1 to T4 to simulate compromising the machine)
+Type: Compromised Donovian System
+Action: Establish appropriate tunneling techniques
+
+
+## PRACTICE Task 4
+
+##Your initial target is T5
+##You will need to find a way to connect.
+##Provide the port number that allowed initial access to the target.
+nmap 10.50.25.34 -T4 -p 21-23,80 --min-rate 8000 2>/dev/null #didnt work
+./scan  #worked, showed 23 is open
+
+## What flag did you find on Net-SSH-01 after identifying it's additional open ports?
+telnet 10.50.25.34  #put in credentials
+ss -ntlp  #gives me the ports that cants be seen from the outside 
+ssh student@10.50.21.74 -R 30700:localmachine:22 -NT #build a remote port back to me so i can use additoinal tools #data collect terminal
+ssh net3_student6@localhost -p 30700  #Terminal 1 from internet host, will fail because of keys
+ssh-keygen -f "/home/student/.ssh/known_hosts" -R "[localhost]:30700" #Copy under "Remove with"
+ssh net3_student6@localhost -p 30700 -D 9050 -NT  #Then you can make the dynamic in Terminal 1
+proxychains wget -r http://localhost    #Terminal 2
+cd localhost
+eom flag.png
+
+## Net-SSH-03 has a flag being hosted on a high port, what country is it referring to with the question?
+#ssh'd in to find the network they were running via ip a
+#Opened up multiple terminals to scan the network
+# The hints, help you get onto the box, DO NOT DISMISS THEM!!
+#Scan the ports of a host 
+proxychains nmap -T4 *IP* | grep "open"
+proxychains nc 192.168.0.30 4444  #Get the banner of a port!!
+
+
+##Use but not related to question
+proxychains wget -r ftp://192.168.0.20
+
+
+####TO CONTINUE TOMORROW
+TERMINALNAME: SSH1TOIntHostRemote COMMAND: ssh student@10.50.21.74 -R 30700:localhost:22 -NT  #telnet to SSH! first
+TERMINALNAME: InternetHostToSSH2 COMMAND: ssh net3_student6@localhost -p 30700 -L 30701:192.168.0.20:3333 -NT
+TERMINALNAME: Dynamic tunnels COMMAND: ssh net3_student6@localhost -p 30702 -D 9050 -NT
+Have an ssh to ssh04 COMMAND: 
+TERMINALNAME: Tools and stuff COMMAND: **Was using proxy chains and scans 
+
+##BUILD A TELNET TUNNEL
+ssh net3_student6@localhost -p 30705 -L 30706:172.16.0.100:23 -NT #Terminal 1
+telnet localhost 30706 #Connect to the telnet tunnel, Terminal 2
+
+
+##Build a telnet tunnel #terminal1
+ssh net3_student6@localhost -p 30702 -L 30703:172.16.0.60:23 -NT
+# Terminal 2, jump over the telnet
+telnet *USER*@localhost 30203
+#Build a remote from the telnet hold
+ssh 192.168.0.40 -p 5555 -R 30700:localhost:22 -NT
+# Connect to something past the telnet tunnel and through the remote tunnel, Terminal 3
+ssh net3_student6@localhost -p 30702 -L 30704:localhost:30700 -NT
+
+
+T5
+Hostname: UNKNOWN
+IP: 10.50.25.34 (Will be Provided by Mission Command)
+creds: netY_studentX:passwordX (netY = Networking Class Identifier & studentX = Student Number & passwordX = Student Number)
+Known Ports: UNKNOWN
+Action: Execute proper movement and redirection techniques
+
+Day 6 - Network Analysis ********************************************************************************
+
+Fingerprinting - aids in OS detection due to different implementations of network stack characteristics. Everything runs on the TCP/IP suite of protocols. 
+  - Can be done: 
+    - active - nmap, netcat, active (sends packets) 
+    - passive - wireshark, tcpdump
+  - POF - Passive OS Fingerprinting, a tool that allows you to make *hits* on patterns and returns the information if it matches the parameters
+    - Looks at variations in initial TTL, fragmentation flag, default IP header packet length, window size, and TCP options
+    - config file
+      - less -N /etc/p0f/p0f.fp
+      - in less command "/" to search for patterns
+      - In /etc/p0f/p0f.fp
+        - [tcp:request] - "[*module*:*client to server/server to client*]
+          - label = s:unix:Linux:3.1-3.10 # *Specific(s)/generic(g) signature*:*OS*:*Name*:*Version*
+          - Sig = = *:64:0:*:mss*20,10:mss,sok,ts,nop,ws:df,id+:0 
+          #Above: *version*:*TTL*:*option link*:IDK:*MSS*
+        - [MTU] - Maximum transmission unit
+          - label = Ethernet or modem
+          - sig   = 576
+          - sig   = 1500
+        - Odds and ends
+          - Grabs additional odd ball info (i.e. nintendo wii, blackberry, BaiduSpider)
+      - To run it: 
+          sudo pof -i *interface(eth0)*
+        ##OR utilizing a file
+          sudo tcpdump port 80 -w wget.pcap # Terminal 1, make a file that captures tcp info on port 80
+          wget 10.50.25.35 # Terminal 2, simulates grabbing from http traffic
+          sudo p0f -r wget.pcap #Access the data captures from tcpdump file
+          - Understanding the tool output: 
+            - dist (syn+ack) - how many hops away is the server
+      - To write the file capture to a log file , easier to parse!!
+        sudo p0f -r wget.pcap -o /var/log/p0f.log
+      - To view the info and work with it 
+        sudo cat -n /var/log/p0f.log
+      - To look for the conversdation piece within the file 
+        sudo cat -n /var/log/p0f.log | egrep "mod=syn"
+      - To see who the requester is 
+        sudo cat -n /var/log/p0f.log | egrep "mod=syn" | egrep "subj=cli"
+      
+Baselining - Snapshot of what the network looks like during a time frame
+  - Objective:
+    - Determines the current state of your network
+    - Ascertain the current utilization of network resources
+    - Identify normal vs peak network traffic time frames
+    
+    
+TCPDUMP commands 
+
+# Return listening ips (syn/ack)
+sudo tcpdump 'tcp[13]=0x12' -r *name*.pcap | awk '{print $3} | cut -d. -f1-4 | sort -n | uniq
+# Return listening ports (syn/ack) and in a certain ip range
+sudo tcpdump 'tcp[13]=0x12' -r *name*.pcap && (net 10.2.0.0/24) -n | awk '{print $3} | cut -d. -f5 | sort -u
+
+
+Network Data types 
+  - Full packet capture data
+    - pcap
+  - Session data
+    - flow (meta data)
+  - Statistical data
+  - Packet String data
+  - Alert data 
+  - Log data
+
+Data Collection devices 
+  Sensors 
+    - In-line
+      - Placed so the network traffic to be monitored 
+        must pass through the sensor enabling it the ability to stop attacks by blocking network traffic.
+    - Passive
+      - IDS
+      
+Methods of data of Data Collection 
+  - TAP
+  - SPAN 
+  - ARP Spoofing
+  
+** When placing sensors, wherever most traffic is going through
+
+Anamoly Detection 
+
+      Indicator of Attack (IOA)
+        - Proactive
+        - A series of actions that are suspicious together
+        - Focus on Intent
+        - Looks for what must happen
+          - Code execution. persistence, lateral movement, etc.
+       
+      Indicator of Compromise (IOC)
+        - Reactive
+        - Forensic Evidence
+        - Provides Information that can change
+          - Malware, IP addresses, exploits, signatures
+          
+ Types of Malware 
+  - Adware/Spyware
+  - Virus
+  - Worm
+  - Trojan 
+  - Rootkit 
+  - Backdoor 
+  - Botnets
+  - Polymorphic & Metamorphic Malware 
+  - Ransomware
+  - Mobile code 
+  - Information-stealing worms 
+  - BIOS/Firmware Malware 
+  
+Potential methods of detection for IOAs and IOCs
+    Display Filters
+    Follow Streams
+    BPFs
+    Color Coding
+    Hex Outputs
+          
+      
+      
+# Get the number packets in a PCAP
+tcpdump -r attack_analysis1.pcap | wc -l
+# grap all source the ips uniquely
+wireshark ->statitistics -> endpoitns 
+tcpdump -r attack_analysis1.pcap | awk '{print $3}' | cut -d. -f1-4 | sort -u
+# Grab all ip hosts
+tcpdump -r attack_analysis1.pcap | awk '{print $3}' | cut -d. -f1-4 | sort -u
+tcpdump -r attack_analysis1.pcap -n | awk '{print $3}' | cut -d. -f1-4 | sort -u #compare
+# Find what transport layer protocol is most prominent (tcp or UDP)
+wireshark ->statitistics -> ipv4 -> ip protocol types
+# find os of an ip using pof
+sudo p0f -r attack_analysis1.pcap | egrep "os|192.168.10.101"
+# There is traffic related to 2G & 3G Cellular Communications, which uses a packet oriented mobile data standard.
+# What protocol is performing this communication?#look for GSM, GPRS, and others from google
+wireshark -> statistics -> protocol hierarchy 
+# what kind of address is 239
+multicast
+
+*** In wireshark 
+ctrl-f -> Packet list - "Packet Bytes/Details"
+
+
+Quick links: 
+Header info: https://git.cybbh.space/net/public/-/blob/master/modules/networking/activities/1-Fundamentals/BPF_Syntax_Examples/bpf-syntax.adoc
+
+
+
+DAY 5 Network Traffic Filtering ************************************************************************
+
+Firewalls - Have rules 
+IDS - Have signatures 
+
+
+Filetering Devices & Mechanics 
+  Why do we filter? 
+    - Ensure websites that should be avoided get blocked 
+    - Block unwanted emails 
+    - Security of software 
+    - Mac filtering - Not allow certain macs in, or only your own 
+    - Monitor network traffic 
+      - Decrease load on network infrastructure 
+      - Ensure data flows efficiency 
+      - Block malicious traffic 
+      - obfuscate network internals 
+      - Ensure data gets to intended recipients and only intended recipients 
+  What devices are used to filter traffic 
+    What mechanics do they use 
+    What Osi layer do they operate at 
+    
+  Filtering Concepts: 
+    - Whitelist vs blacklist 
+      - Allow or Deny 
+    - Default polices and Implicit and explicit 
+      - Implicit - Implied 
+      - Explicit - clearly stated 
+    - Network Devuce operation modes 
+      - Routed - the firewall is a "routed hop" in the network. It has addressable interfaces in different networks, can perform NAT between connected networks, and can use routing protocols to relay information
+      - Transparent - transparent firewall is placed on the network as a Layer 2 device that acts like a "bump in the wire".
+    - Intrusion Defense 
+      - Intrusion detection - logs when something has happened 
+      - Intrusion prevention - stops things from going through the network 
+    - Firewall filtering
+      - Stateless filtering (L3 +4) - has to do with packets 
+      - Stateful inspection (L4) - Handy for tracking connections 
+      - Application Layer (L7) 
+      
+ T2 picture, slide 5.3 answers 
+ A. Network Firewall
+ B. Intrusion Prevention System - must be inline of the traffic
+ C. IPS/IDS
+ D. Internet prevention System - must be inline of the traffic
+ E. Firewall 
+ F. Firewall
+ G. Intrustion Detection System - Does not have to be placed in line of traffic 
+ H. Intrustion Detection System - Does not have to be placed in line of traffic 
+ J. Proxy 
+ What traffic would E filter for? Traffic to and from Lan 1
+ What is the firewall’s mode of operation if no IP addresses are assigned to its NICs? Transparent 
+    
+ Traffic direction: 
+  - Traffic originating from the localhost to the remote-host
+  - Return traffic from that remote-host back to the localhost.
+  - Traffic originating from the remote-host to the localhost
+  - Return traffic from the localhost back to the remote-host.
+  
+Host based filtering
+  - Windows - Windows frewall and Windows defender
+  - Linux - Custom 
+  
+  NetFiletering Framework: 
+    - packet filtering
+    - stateless/stateful Firewalls
+    - network address and port translation (NAT and PAT)
+    - other packet manipulation
+    - Hooks 
+          NF_IP_PRE_ROUTING → PREROUTING  #Before I hit other rules, change packet, then apply                                                                                        
+          NF_IP_LOCAL_IN → INPUT    # Triggers on incoming packets that have been determined through the internal routing
+          NF_IP_FORWARD → FORWARD   #passing through
+          NF_IP_LOCAL_OUT → OUTPUT  # Triggers on outbound traffic created by any local process
+          NF_IP_POST_ROUTING → POSTROUTING
+          
+  Configuring IPTables - only works for ipv4
+  
+    Seperate Applications - layer 2 or 3+ protocols 
+    - iptables - IPv4 packet administration
+    - ip6tables - IPv6 packet administration
+    - ebtables - Ethernet Bridge frame table administration
+    - arptables - arp packet administration
+    Each application has several tables and shains 
+    - Filter - default table, provides packet filtering 
+      - Input, forwarding, and output 
+    - Nat - used to translate pricat to/from public addresses and ports 
+      - pretrouting, postrouting, and output 
+    - Mangle - provides special packet alteration. can modify various fields, header fields 
+      - All Chains 
+      
+    Ip table commands 
+    -A = append a rulle (bottom of the list) 
+    -I = Insert a rule (top of the list) 
+    -D = delete a rule (i.e. -D [chain] [rule#])
+    -L = list rules 
+    -P = changes default policy (default is allow ANY/ANY) 
+    -p = list a protocol (tcp,icmp.sctp & others0)
+    -d = destination address
+    -s = source ip address
+    -j = jump tp target action 
+    -n = display port numbers vice protocol 
+    -t = specifies table, default is a filter 
+    -line numbers = gives line numbers 
+    Flush table - do not flush unless default is back to accept ANY/ANY
+      iptables -t *table* -F
+    Change default policy
+      iptables -t [table] -P [chain] [action]
+    Lists rules with rule numbers
+      iptables -t [table] -L --line-numbers
+    Lists rules as commands interpreted by the system
+      iptables -t [table] -S
+    Inserts rule before Rule number
+      iptables -t [table] -I [chain] [rule num] [rules] -j [action]
+    Deletes rule at number
+      iptables -t [table] -D [chain] [rule num]
+    
+  Configuring NFTables 
+    
+     NFTable families - does all the below
+      - ip - IPv4 packets
+      - ip6 - IPv6 packets
+      - inet - IPv4 and IPv6 packets
+      - arp - layer 2
+      - bridge - processing traffic/packets traversing bridges.
+      - netdev - allows for user classification of packets - nftables passes up to the networking stack
+        (no counterpart in iptables)
+     
+     Introduces Chain-Types 
+      - Filter - Filter packets 
+      - Route - to reroute packets 
+      - Nat - Used for Network Address Translation 
+      
+    Creation hooks 
+      - PREROUTING
+      - POSTROUTING
+      - INPUT
+      - OUTPUT
+      - FORWARD
+      - INGRESS - used with NETDEV family only
+      
+    ** slide 9.5 - flow chart ![image](https://user-images.githubusercontent.com/81153138/179538734-e9ecbabf-244b-4d36-9b99-84ef424082dd.png)
+    ** slide 9.6 - Family-Chain-Hooks ![image](https://user-images.githubusercontent.com/81153138/179538696-aa97f82d-9563-459b-8395-06b4dc87137f.png)
+    ** slide 9.7 - Netfilter Fulll Hierarchy ![image](https://user-images.githubusercontent.com/81153138/179538656-25117581-a0a7-4a1d-bc34-b26845b32ab5.png)
+
+    
+    nftable enhancements
+      - one table command to replace multiple
+      - simpler, cleaner syntax
+      - less code duplication
+      - simultaneous configuration of IPv4 and IPv6
+    
+  1. Create the Table
+    nft add table [family] [table]
+    [family] = ip, ip6, inet, arp, bridge and netdev.
+    [table] = user provided name for the table.
+  
+  2. Create the Base Chain 
+    nft add chain [family] [table] [chain] { type [type] hook [hook]
+      priority [priority] \; policy [policy] \;}
+    [chain] = User defined name for the chain.    hook and chain are the same 
+    [type] =  can be filter, route or nat.
+    [hook] = prerouting, ingress, input, forward, output or
+        postrouting.
+    [priority] = user provided integer. Lower number = higher
+             priority. default = 0. Use "--" before
+             negative numbers.
+    ; [policy] ; = set policy for the chain. Can be
+             accept (default) or drop.
+     Use "\" to escape the ";" in bash
+  
+  3. Create a rule in the Chain
+      nft add rule [family] [table] [chain] [matches (matches)] [statement]
+      [matches] = typically protocol headers(i.e. ip, ip6, tcp,
+            udp, icmp, ether, etc)
+      (matches) = these are specific to the [matches] field.
+      [statement] = action performed when packet is matched. Some
+              examples are: log, accept, drop, reject,
+              counter, nat (dnat, snat, masquerade)
+  
+  ** Modify nftables - NEVER FLUSH BEFORE SETTING DEFAULT POLICIES
+    nft {list | flush} ruleset
+    nft {delete | list | flush } table [family] [table]
+    nft {delete | list | flush } chain [family] [table] [chain]
+    nft list table [family] [table] [-a]
+    Adds after position
+      nft add rule [family] [table] [chain] [position <position>] [matches (matches)] [statement]
+    Inserts before position
+      nft insert rule [family] [table] [chain] [position <position>] [matches (matches)] [statement]
+    Replaces rule at handle
+      nft replace rule [family] [table] [chain] [handle <handle>] [matches (matches)] [statement]
+    Deletes rule at handle
+      nft delete rule [family] [table] [chain] [handle <handle>]
+  
+  
+  DEMO: 
+  ## IPTables 
+  # See what is currently configured on IPTables
+  sudo iptables -L 
+  # See what is configured in the NAT tables 
+  sudo iptables -t nat -L 
+  # Flush your filter tables 
+  sudo iptables -F 
+  # Flush your nat/mangle tables 
+  sudo iptables -t [nat/mangle] -F 
+  # See what is configured in the Mangle tables 
+  sudo iptables -t mangle -L 
+  
+  Make SSH and terminator work on a box and nothing else_______________________________________________________
+  
+  ## From any source or destination, we now allow SSH to come from any kind of form on the box 
+  # Create a rule to allow the input of SSH
+  sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+  # Create a rule to allow the input of SSH
+  sudo iptables -A INPUT -p tcp --sport 22 -j ACCEPT
+  # Create a rule to allow the output of SSH
+  sudo iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
+  # Create a rule to allow the output of SSH
+  sudo iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
+  
+  ## Does the same as above in 2 commands instead of 4 except for X11 forwarding (i.e. terminator) 
+  # Allow for xll forwarding for source and destination of INPUT
+  sudo iptables -A INPUT -p tcp -m multiport --ports 6010,6011,6012 -j ACCEPT
+  # Allow for xll forwarding for source and destination of OUTPUT
+  sudo iptables -A OUTPUT -p tcp -m multiport --ports 6010,6011,6012 -j ACCEPT
+  
+  # Change the default after the rules you put in hit first to DROP anything other than SSH
+  sudo iptables -P INPUT DROP 
+  sudo iptables -P OUTPUT DROP
+  ______________________________________________________________________________________
+  
+  # Show all current rules and port #s(-n), if you delete line 1, line 2 becomes line 1
+  sudo iptables -L -n --line-numbers
+  
+  #Great way to test if other operations were locked/dropped
+  ping 172.16.82.112 -c 3 #from your box your on out
+  ping 10.10.0.40 -c 3  #From another box going in
+  
+  #Delete a rule 
+  sudo iptables -D *filter/nat/mangle* rule_line_number
+  
+  ##Blocking and allowing IP Adress
+  #Blocking any kind of traffic from blue host 1
+  sudo iptables -I INPUT -s 172.16.82.106 -j DROP
+  sudo iptables -I OUTPUT -d 172.16.82.106 -j DROP
+  #Allow anything and everything only from blue host 3
+  sudo iptables -A INPUT -s 172.16.82.112 -j ACCEPT
+  sudo iptables -A OUTPUT -d 172.16.82.112 -j ACCEPT
+  
+  # shows you which rule is getting hit the most, show packet and byte counts 
+  sudo iptables -L -v
+  
+  # Drop invalid fragments 
+  sudo iptables -A INPUT -m state --state INVALID -j DROP 
+  # Drop fragments 
+  sudo iptables -A INPUT -f -j DROP
+  # Stop syn attacks, limit how fast SYN flags can come in
+  sudo iptables -A INPUT -i eth0 -p tcp --syn -m limit --limit 10/second -j ACCEPT
+  
+  #save rules to a file 
+  sudo iptables-save > ipt.conf
+  
+  #
+  sudo iptables -P INPUT ACCEPT
+
+  # Makes all 3 chains accept, instead of drop ****MUST DO THIS BEFORE FLUSHING
+  for CHAIN in INPUT FORWARD OUTPUT; do sudo iptables -P $CHAIN ACCEPT;done
+  
+  #Clear your rules 
+  sudo iptables -F
+  
+  # Bring back your saved rules 
+  sudo iptable-restore < ipt.conf -v
+  
+  #View your tables 
+  sudo iptables -L -n --line-numbers
+  
+  
+## NFTABLE DEMO
+
+#Install nft
+sudo apt-get install nftables
+
+# Flush a table 
+sudo nft flush table ip COSC 
+# delete a table 
+sudo nft delete table ip COSC
+
+Creat an IP table, with chains and rules _________________________________________________________
+# List the current tables 
+sudo nft list tables
+# Adding a table within the ip family
+sudo nft add table ip COSC
+# create a chain 
+sudo nft add chain ip COSC input { type filter hook input priority 0 \; policy accept \; } 
+# See the created chain 
+sudo nft list ruleset
+# create a rule at the top in the chain of ip table COSC, 
+sudo nft insert rule ip COSC input tcp sport 22 accept
+sudo nft insert rule ip COSC input tcp dport 22 accept
+sudo nft insert rule ip COSC output tcp sport 22 accept
+sudo nft insert rule ip COSC output tcp dport 22 accept
+# Change everything else to close 
+sudo nft add chain ip COSC output { type filter hook output priority 0 \; policy drop \; }
+sudo nft add chain ip COSC input { type filter hook input priority 0 \; policy drop \; }
+__________________________________________________________________________________________________
+
+# TEST your work 
+ping 172.16.82.106 -c 3 #to the box 
+ping *ip* -c 3          #from the box you worked on out  
+  
+#view the rule set and see the handles 
+sudo nft list ruleset -ann
+
+#make a rule in your ip table named cosc to not allow the source or destination of an ip puts at bottom
+sudo nft add rule ip COSC input ip saddr 172.16.82.112 drop
+sudo nft add rule ip COSC output ip daddr 172.16.82.112 drop
+
+#make a rule in your ip table named cosc to allow the source or destination of an ip puts at bottom
+sudo nft add rule ip COSC input ip saddr 10.10.0.40 accept 
+sudo nft add rule ip COSC output ip daddr 10.10.0.40 accept 
+
+**to put at top, use insert instead of add above!!
+
+# make a rule that puts it in a position based off the hanndles in the -ann list function, below the handle
+sudo nft add rule ip cosc input position 4 ip saddr 172.16.82.112 drop
+sudo nft insert rule ip cosc input position 4 ip saddr 172.16.82.112 drop
+*insert instead of add puts it above the handle 
+# For the output/destination
+sudo nft insert rule ip COSC output position 6 ip daddr 172.16.82.112 drop
+
+# Delete rules you dont want, based off the handle number
+sudo nft delete rule ip COSC input handle 7
+#For output/destination
+sudo nft delete rule ip COSC output handle 8
+
+# Save em 
+sudo nft list ruleset > nfttables.rules 
+
+# to get out, delete the table! 
+sudo nft delete table ip COSC 
+
+# Restore the rules 
+sudo nft -f nfttables.rules
+
+####Practice
+## 1
+# Allow ssh, telnet and rdp on the box 
+sudo iptables -A INPUT -p tcp -m multiport --ports 22,23,80,3389 -m state --state NEW,ESTABLISHED -j ACCEPT 
+sudo iptables -A OUTPUT -p tcp -m multiport --ports 22,23,80,3389 -m state --state NEW,ESTABLISHED -j ACCEPT 
+# change default policies of all filter table to drop 
+for CHAIN in INPUT FORWARD OUTPUT; do sudo iptables -P $CHAIN DROP;done
+#Only allow pivot to ping to/from
+sudo iptables -A INPUT -p icmp --icmp-type 0 -s 10.10.0.40 -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type 8 -s 10.10.0.40 -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type 0 -d 10.10.0.40 -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type 8 -d 10.10.0.40 -j ACCEPT
+#Allow port 6579 and 4444 for tcp and udp
+sudo iptables -A INPUT -p udp -m multiport --ports 4444,6579 -j ACCEPT 
+sudo iptables -A OUTPUT -p udp -m multiport --ports 4444,6579 -j ACCEPT 
+sudo iptables -A INPUT -p tcp -m multiport --ports 4444,6579 -j ACCEPT 
+sudo iptables -A OUTPUT -p tcp -m multiport --ports 4444,6579 -j ACCEPT 
+#Allow for new and established traffic from 80 
+did up top
+
+#2 
+# Allow ssh, telnet and rdp on the box  && 80
+sudo iptables -A INPUT -p tcp -m multiport --ports 22,23,80,3389 -m state --state NEW,ESTABLISHED -j ACCEPT 
+sudo iptables -A OUTPUT -p tcp -m multiport --ports 22,23,80,3389 -m state --state NEW,ESTABLISHED -j ACCEPT 
+# change default policies of all filter table to drop 
+for CHAIN in INPUT FORWARD OUTPUT; do sudo iptables -P $CHAIN DROP;done
+
+##3 
+# List the current tables 
+sudo nft list tables
+# Adding a table within the ip family
+sudo nft add table ip CCTC
+# create a chain 
+sudo nft add chain ip CCTC input { type filter hook input priority 0 \; policy accept \; } 
+sudo nft add chain ip CCTC output { type filter hook output priority 0 \; policy accept \; } 
+# See the created chain 
+sudo nft list ruleset
+## create a rule at the top in the chain of ip table COSC, 
+# Allow New and Established traffic to/from via SSH, TELNET, and RDP
+# Allow ports 5050 and 5150 for both udp and tcp traffic to/from
+# Allow New and Established traffic to/from via HTTP
+sudo nft insert rule ip CCTC input tcp sport {22, 23, 80, 3389, 5050, 5150} accept
+sudo nft insert rule ip CCTC input tcp dport {22, 23, 80, 3389, 5050, 5150} accept
+sudo nft insert rule ip CCTC output tcp sport {22, 23, 80, 3389, 5050, 5150} accept
+sudo nft insert rule ip CCTC output tcp dport {22, 23, 80, 3389, 5050, 5150} accept
+
+sudo nft insert rule ip CCTC output udp dport {5050, 5150} accept
+sudo nft insert rule ip CCTC output udp sport {5050, 5150} accept
+sudo nft insert rule ip CCTC input udp dport {5050, 5150} accept
+sudo nft insert rule ip CCTC input udp sport {5050, 5150} accept
+
+#Only allow Pivot to perform ping (ICMP) operations to/from
+sudo nft insert rule ip CCTC input ip saddr 10.10.0.40 icmp type { echo-request} counter accept
+sudo nft insert rule ip CCTC input ip saddr 10.10.0.40 icmp type { echo-reply } counter accept
+
+sudo nft insert rule ip CCTC output ip daddr 10.10.0.40 icmp type { echo-request} counter accept
+sudo nft insert rule ip CCTC output ip daddr 10.10.0.40 icmp type { echo-reply } counter accept
+
+# Change everything else to close 
+sudo nft add chain ip CCTC output { type filter hook output priority 0 \; policy drop \; }
+sudo nft add chain ip CCTC input { type filter hook input priority 0 \; policy drop \; }
+
+    
+###MORE PRACTICE
+##1
+# 
+GET THE POST - PRE ROUT from someone else
+#OR 
+sudo iptables -t nat -A POSTROUTING -o eth0 -s 192.168.1.10 -j MASQUERADE
+#FLAG
+0c2ca80fad4accccce3bcecec1d238ce
+
+##2
+#create ip table named NAT
+sudo nft add table ip NAT
+# Create POSTROUTING and PREROUTING base chains with:
+sudo nft add chain ip NAT postrouting { type nat hook postrouting priority 0 \; policy accept \; } 
+sudo nft add chain ip NAT prerouting { type nat hook prerouting priority 0 \; policy accept \; } 
+#CHECK
+sudo nft list ruleset -ann
+# Configure POSTROUTING chain to translate T6 IP address to T2 (Create the rule by specifying the Interface information first then Layer 3)
+# HAs to go to the eth type that is going to your internet host
+sudo nft add rule ip NAT postrouting ip saddr 192.168.3.30 oif eth0 masquerade
+
+#FLAG
+be33fe60229f8b8ee22931a3820d30ac
+
+  Task 1
+> Linux Ops Station
+→ INTERNET_HOST - 10.10.0.40
+-→ BLUE_Host-1 - T1 - 172.16.82.106
+-→ BLUE_Host-3 - T2 - 172.16.82.112
+-→ BLUE_INT_DMZ_HOST-1 - T3 - 172.16.40.10
+T5 - 192.168.1.10
+T6
+Hostname: BLUE_PRIV_HOST-3
+IP: 192.168.3.30
+
+
+Network based filtering________________________________________________________________________________
+
+Dont care bout VYOS!!
+
+Extended ACLs must be placed closest to the source
+
+IDS/IPS: 
+  Fail close: if the IPS fails, it will disconnect the server it is protecting.
+  Fail open: if the IPS fails, it will pass through all traffic to the server including any possible attacks.
+  Insertion Attack
+    IDS accepts packet
+    Host will not accept packet
+  Evasion Attacking
+    IDS does not accept packet
+    Host will accept packet
+  
+
+Snort 
+  - Basic set up: 
+    [action] [protocol] [s.ip] [s.port] [direction] [d.ip] [d.port] ( match conditions ;)
+  - Actions: 
+    - alert - generate alert and log packet
+    - log - log packet only
+    - pass - ignore the packet
+    - drop - block and log packet
+    - reject - block and log packet and send TCP message (for TCP traffic) or ICMP message (for UDP traffic)
+    - sdrop - silent drop - block packet only (no logging)
+  - Protocol - includes TCP, UDP, ICMP or IP (TCP, UDP and ICMP combined)
+  - Source IP address - a specific address, a CIDR notation, a range of addresses, multiple addresses, variable addresses, or "any" IP address
+  - Source Port - one port, multiple ports, a range of ports or any
+  - Direction - either incoming ( → ) or in either direction ( <> )
+  - Destination IP address - a specific address, a CIDR notation, a range of addresses, multiple addresses, variable addresses, or "any" IP address
+  - Destination port - one port, multiple ports, a range of ports or any destination port
+
+
+#DEMO
+##find snort / see if snort is on the box 
+which snort 
+#OR 
+find / -iname "snort" 2>/dev/null
+## to manipulate snort rules, go into the snort.conf file 
+vim /etc/snort/snort.conf #look to see where the rules are pointing and go there :wq
+##All logs go here, your ALERTS and other logs 
+/var/log file with Snort
+## make variables for ease of access when running full command, your choice cause you have to make it every time 
+CONF=/etc/snort/snort.conf
+LOG=/var/log/snort
+## Run your snort
+sudo snort -D -l /var/log/snort/ -c /etc/snort/snort.conf
+# To view your alerts
+cd /var/log/snort
+sudo cat alert
+#To read the binary 
+sudo tcpdump -r snort.log.1658242231
+sudo tcpdump -vvXntr snort.log.1658242231 -c 4  #verbose, ethernet header, no name res, no time, read file, count 4 packets
+# grab just the ips from above and the count 
+sudo tcpdump -ntr snort.log.1658242231 | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sort -u | wc -l
+sudo tcpdump -ntr snort.log.1658242231 | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sort | uniq -c #see the count of each ip
+# read the file the snort way
+sudo snort -r snort.log.1658242231 
+
+
+
+#Good to know 
+#use explain shell
+put the command in there 
+
+##TASK 3
+#Gorgan Cyber Forces have captured targeted traffic related to specific Indicators of Compromise (IOCs) relating to Donovian Actors. They have stored the Traffic Capture on the Pivot:
+/home/activity_resources/pcaps/ids.pcap
+#They have also provided the following syntax for utilizing Snort, their implemented IDS Signature solution:
+sudo snort -D -i eth0 -l /var/log/snort/ -c /etc/snort/snort.conf
+sudo snort -r /home/activity_resources/pcaps/ids.pcap -c /etc/snort/snort.conf
+
+
+###Practice 10.50.21.41 SSH port 25
+#1. What command was used to run snort on that machine.
+ps -elf | grep snort
+#2. Utilizing T4, which SNORT rule would create an alert when No TCP Flags are set or the URG, PUSH, and FIN TCP Flags are set?
+find / -iname "snort" 2>/dev/null
+cd /etc/snort
+cat snort.conf  #find what rules are run 
+cd rules
+*cat the rules and look for a null scan
+#3. Utilizing T4, which SNORT rule would create an alert when the Hex Indicator of a NOP Sled are detected?
+**look through files and find a NOP 90 90 90 90 in hex
+#4. Utilizing T4, which SNORT rule would create an alert when a DNS Zone Transfer is detected with the content specified in CVE-1999-0532
+** look at CVE, look at files for |00 01 00 00 00 00 00| or defined sone transfer
+#5. Utilizing T4, which SNORT rule would create an alert when an ICMP Message is detected.
+**Look for ICMP any any
+#6. count number of icmp alerts
+sudo snort -r /home/activity_resources/pcaps/ids.pcap -c /etc/snort/snort.conf
+sudo snort -r *file* 
+#7. create a rule in a file as below 
+alert icmp any any -> any any (msg:"Cows"; content:"|DEADBEEF|";sid:1000001;)
+** Change the snort.conf to only hit your rule, comment out the others 
+#9. creat a rule like below. 
+alert icmp any any -> 10.3.0.0/24 any (msg:"DMZ Ping";itype:8;icode:0;sid:1000002;)
+#11. rule that does below #brute force ssh, then get the count 
+alert tcp any any -> any 22 ( msg:"SSH attempt detected";threshold:type both, track by_src, count 3 , seconds 10;sid:1000003; )
+#12. Track IP Protocol and RDP traffic to and from 10.1.0.0/16 regardless of the traffic flow state.
+alert ip any any <> 10.1.0.0/16 3389 ( msg:"RDP message";flow:stateless;sid:1000004;)
+#13. Detect TCP Null scan to 10.3.0.0/24 regardless of the traffic flow state.
+alert tcp any any -> 10.3.0.0/24 any (msg:"NULL Scan"; flow:stateless; flags: 0;sid:1000005;)
+#14. Detect all traffic using the Identified Ports regardless of the traffic flow state going to 10.0.0.0/8.
+alert tcp any any -> 10.0.0.0/8 139,445 (msg:"WannaCry?"; flow:stateless;sid:1000006;)
+alert udp any any -> 10.0.0.0/8 137,138 (msg:"Wanna Cry?";sid:1000007;)
+
+
+CAPSTONE  **********************************************************************************************
+
+**check the EVERY BOX "/usr/share/cctc/"
+Creds: ssh net3_student7@10.50.24.228   password7
+echo "CHEESE" | base64
+
+#1, find the fucking questions 
+# for data relating to CCTC is on the machine.
+find / -name hint* 2> /dev/null
+find / -name flag* 2> /dev/null
+wget the open 80 port #got a hint 
+Set up a tunnel
+ssh net3_student7@10.50.24.228 -L 30700:localhost:22 -NT
+Enumerate the whole fucking network
+Read questions 02 web, means cappstone 02 (box) a web related thing
+
+Found the set of questions utlizing the hint and connecting to the webservice it told about, downloaded them. 
+wget
+then to open used firefox index.html
+
+
+Found one set of quesitons using /usr/share/cctc/"
+1. Using BPF’s, determine how many packets with a DSCP of 26 being sent to the host 10.0.0.103.
+tcpdump 'ip[1]&0xfC=0x68' -r capstone-bpf.pcap
+tcpdump 'ip[1]&0xfC=0x68' and dst 10.0.0.103 -r capstone-bpf.pcap | wc -l
+echo 108 | base 64 
+
+2. What is the total number of fragmented packets?
+#If the Fragment Offset field > 0 then it is a packet fragment, or if the Fragment Offset field = 0 and the MF flag is set then it is a fragment packet.
+tcpdump 'ip[6:2]&0x3fff!=0x0000' -r capstone-bpf.pcap | wc -l   #Only gets offset at 0
+tcpdump 'ip[6]&0x20=0x20 || ip[6:2]&0x1fff>0' -r capstone-bpf.pcap
+
+3. How many packets have the DF flag set and has ONLY the RST and FIN TCP Flags set?
+tcpdump 'ip[6]&0x40!=0&&tcp[13]=0x05' -r capstone-bpf.pcap 
+
+4. An attacker is targeting the host 10.0.0.104 with either a TCP full or half open scan. Based off the pcap, how many ports are open?
+tcpdump 'tcp[13]=0x12' and src 10.0.0.104 -r capstone-bpf.pcap | wc -l
+
+Found more in wget on another beotch
+
+** You can send streams and datagrams over proxychains
+
+*** MAKE YOURSELF A CISCO TTL 
+sudo iptables -t nat -A POSTROUTING -j TTL --ttl-set 255
+
+** listen for credentials 
+proxychains scp tgt@192.168.1.10:secret.txt .
+
+
+___________________________________________________________________________________________________________________________________________--
+#Terminal 1, INTHOSTTOCap1
+ssh net3_student7@10.50.24.228 -L 30700:localhost:22 -NT
+#Terminal 2, IHTOCAP2 Telnet
+ssh net3_student7@localhost -p 30700 -L 30701:10.1.1.11:23 -NT
+#Terminal 3, IHTOCAP4 Ttelnet
+ssh net3_student7@localhost -p 30700 -L 30702:10.1.1.33:23 -NT
+#Terminal 4, IHTOCAP6 
+ssh net3_student7@10.50.27.11 -p 7777 -L 30703:localhost:7777 -NT
+#Terminal 5, IHTOCAP7 telnet
+ssh net3_student7@localhost -p 30703 -L 30704:10.2.2.7:23 -NT
+#Terminal 6, IHTOCAP7
+ssh net3_student7@localhost -p 30703 -L 30705:10.2.2.7:2222 -NT
+#Terminal 7, REMOTECAP07toCAP06
+ssh 10.2.2.6 -p 7777 -R 30700:localhost:2222 -NT  #may have to login and change key on this bad boy
+# Terminal 8, IHTOCap7
+ssh net3_student7@localhost -p 30703 -L 30706:localhost:30700 -NT
+#teminal 9, IHTOCap8
+ssh net3_student7@localhost -p 30706 -L 30707:10.10.10.140:301 -NT
+#Terminal 10, IHTOCAP9
+ssh net3_student7@localhost -p 30706 -L 30708:10.10.10.167:404 -NT
+
+# Terminal , for dynamic
+ssh net3_student7@localhost -p 30706 -D 9050 -NT  #what i was at the latest
+###LAST you were at you were , below
+#Terminal 
+ssh 10.10.10.140 -p 301
+##Sitting on Cap8 and thinking og going to 9
+
+____________________________________________________________-
+
+To answer these 8 questions, you will need extract the capstone-analysis.pcap file and open it with Wireshark.
+
+
+-------------------------------------------------------------------------------
+
+Question 1:
+
+Which ip address initiated the attack against the FTP server?
+
+Provide the ip address in the x.x.x.x format and converted to Base64.
+
+**Filterd on FTP server traffic from protocol hierarchy tab
+
+-------------------------------------------------------------------------------
+
+Question 2:
+
+How many failed attempts to guess the FTP password?
+
+Provide number and converted to Base64.
+
+Filtered on the filed in text that said "login unsuccessful
+
+-------------------------------------------------------------------------------
+
+Question 3:
+
+What is the correct FTP password?
+
+Provide the exact password and converted to Base64.
+
+follow tcp stream made this easier to follow
+-------------------------------------------------------------------------------
+
+Question 4:
+
+What is the system IP that was compromised?
+
+Provide the ip address in the x.x.x.x format and converted to Base64.
+
+-------------------------------------------------------------------------------
+
+Question 5:
+
+What is the FTP version?
+
+Provide the version number only and converted to Base64.
+
+-------------------------------------------------------------------------------
+
+Question 6:
+
+What is the name of the file taken by the attacker?
+
+Provide the filename exactly as shown and converted to Base64.
+
+** test.txt
+
+-------------------------------------------------------------------------------
+
+Question 7:
+
+What was the message contained within the extracted file?
+
+Provide the message exactly as shown and converted to Base64.
+
+-------------------------------------------------------------------------------
+
+Question 8:
+
+What is the name of the file uploaded by the attacker?
+
+Provide the filename exactly as shown and converted to Base64.
+
+** company_payroll_2019
+
+-------------------------------------------------------------------------------
+
+
+Question 4:
+
+What is the exact Alert Message that is being triggered on the system?
+
+Convert the exact message as you see it and convert it to Base64 for your answer.
+
+Normally the Alert File should be here but it seems that the Admin saved it elsewhere. How can you find out where the Snort Daemon is saving it?
+
+
+find / -iname "snort.log" 2>/dev/null
+
+
+Question 5:
+
+From what IP is the attack coming from?
+
+Provide your answer in the x.x.x.x format and converted to Base64.
+
+-------------------------------------------------------------------------------
+Review: 
+
+# Listen to the data coming through a certain interface
+tcpdump -i eth1
+
+# Use curl cht.sh/tcpdump for good examples of using BPF and more 
+* Remember, in tcp, you can define things like port, source, host, etc, to define different filterings (i.e below)
+tcpdump port 80 and host 10.10.10.40
+# best oractice for most legible data is to use the options -XXvvn
+# below listens on eth0, from port 7777, going to/from 10.10.0.40
+sudo tcpdump -i eth0 port 7777 and host 10.10.0.40 -XXvvn
+
+
+#there is usually a readme on the starting box 
+
+** Annotate the credentials on the map or on another device, as it might get hemmed up. Try multpile credentials in a box
+
